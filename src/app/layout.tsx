@@ -7,15 +7,10 @@ import { Metadata } from "next";
 
 import { baseURL, style, meta, og, schema, social } from "@/once-ui/resources/config";
 import { Background, Column, Flex, ToastProvider } from "@/once-ui/components";
-
-import { Inter } from "next/font/google";
+import { Inter } from 'next/font/google';
+import { Space_Grotesk } from 'next/font/google';
 import { Roboto_Mono } from "next/font/google";
-
-const primary = Inter({
-  variable: "--font-primary",
-  subsets: ["latin"],
-  display: "swap",
-});
+import { Pacifico } from "next/font/google"
 
 const code = Roboto_Mono({
   variable: "--font-code",
@@ -23,18 +18,31 @@ const code = Roboto_Mono({
   display: "swap",
 });
 
-type FontConfig = {
-  variable: string;
-};
+const primary = Inter({
+    variable: '--font-primary',
+    subsets: ['latin'],
+    display: 'swap'
+});
 
-/*
-	Replace with code for secondary and tertiary fonts
-	from https://once-ui.com/customize
-*/
+const tertiary = Space_Grotesk({
+    variable: '--font-tertiary',
+    subsets: ['latin'],
+    display: 'swap'
+});
+const pacifico = Pacifico({
+  variable: '--font-pacifico',
+  subsets: ['latin'],
+  display: 'swap',
+  weight: '400'
+});
 const secondary: FontConfig | undefined = undefined;
-const tertiary: FontConfig | undefined = undefined;
-/*
- */
+
+export interface FontConfig {
+  variable: string;
+  subsets: string[];
+  display: string;
+}
+
 
 export async function generateMetadata(): Promise<Metadata> {
   const host = (await headers()).get("host");
@@ -112,6 +120,7 @@ export default function RootLayout({
       className={classNames(
         primary.variable,
         code.variable,
+        pacifico ? pacifico.variable : "",
         secondary ? secondary.variable : "",
         tertiary ? tertiary.variable : "",
       )}
