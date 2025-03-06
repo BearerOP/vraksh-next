@@ -33,7 +33,6 @@ import {
 import { RiVisaLine } from "react-icons/ri";
 
 import { FaDiscord, FaGithub, FaGoogle } from "react-icons/fa6";
-import { FaTwitter } from "react-icons/fa";
 
 export const iconLibrary: Record<string, IconType> = {
   chevronUp: HiChevronUp,
@@ -67,5 +66,4 @@ export const iconLibrary: Record<string, IconType> = {
   visa: RiVisaLine,
   security: HiOutlineShieldCheck,
   sparkle: HiOutlineSparkles,
-  twitter: FaTwitter
 };

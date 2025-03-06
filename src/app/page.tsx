@@ -37,10 +37,14 @@ import {
   Column,
   Row,
   StyleOverlay,
+  Badge,
+  Spinner,
+  Flex,
 } from "@/once-ui/components";
 import { CodeBlock, MediaUpload } from "@/once-ui/modules";
 import Link from "next/link";
-import LogoIcon from "../../public/images/icon.png";
+import { checkUsername } from "@/utlis/api";
+import { BiCheckCircle, BiXCircle } from "react-icons/bi";
 export default function Home() {
   const [selectedValue, setSelectedValue] = useState("");
   const [selectedRange, setSelectedRange] = useState<DateRange>();
@@ -58,6 +62,31 @@ export default function Home() {
     "AI / ML",
   ]);
   const [twoFA, setTwoFA] = useState(false);
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const [status, setStatus] = useState<"success" | "error" | null>(null);
+  async function claimUsername(username: string) {
+    setLoading(true);
+    setStatus(null);
+    try {
+      const data = await checkUsername(username);
+      console.log("API Response:", data);
+
+      if (data.exists) {
+        // Assuming response is { exists: true/false }
+        addToast({ message: "Username already taken", variant: "danger" });
+        setStatus("error");
+      } else {
+        addToast({ message: "Username available!", variant: "success" });
+        setStatus("success");
+      }
+    } catch (error) {
+      addToast({ message: "Error checking username", variant: "danger" });
+      setStatus("error");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const handleSelect = (value: string) => {
     console.log("Selected option:", value);
@@ -127,7 +156,15 @@ export default function Home() {
           paddingLeft="32"
           paddingY="20"
         >
-          <Logo wordmark={false} iconSrc={"https://cdn.discordapp.com/attachments/1159188447458775203/1346235460594438144/icon_1.png?ex=67c772f9&is=67c62179&hm=ca54a905aaa47460f9c86fc2445650df3ee92adb8b82da7330b5d1dfd524c7cc&"} size="m" icon={true} href="#" />
+          <Logo
+            wordmark={false}
+            iconSrc={
+              "https://cdn.discordapp.com/attachments/1159188447458775203/1346235460594438144/icon_1.png?ex=67c772f9&is=67c62179&hm=ca54a905aaa47460f9c86fc2445650df3ee92adb8b82da7330b5d1dfd524c7cc&"
+            }
+            size="m"
+            icon={true}
+            href="#"
+          />
           <Row gap="12" hide="s">
             <Button
               href="https://discord.com/invite/5EyAQ4eNdS"
@@ -251,12 +288,21 @@ export default function Home() {
             padding="32"
             position="relative"
           >
-            <InlineCode radius="xl" shadow="m" fit paddingX="16" paddingY="8">
+            <Badge
+              arrow
+              radius="xl"
+              shadow="l"
+              textType="code"
+              textSize="s"
+              fit
+              paddingX="16"
+              paddingY="8"
+            >
               ✨ Introducing
               <Text onBackground="brand-medium" marginLeft="8">
                 Vraksh 🌱
               </Text>
-            </InlineCode>
+            </Badge>
             <div>
               <Heading as="h1" variant="display-strong-l" align="center">
                 Grow Your
@@ -270,7 +316,7 @@ export default function Home() {
                 }}
                 align="center"
               >
-                Digital Presence
+                Digital Presence 🌱
               </Text>
             </div>
             <Text
@@ -285,24 +331,45 @@ export default function Home() {
               style={{ display: "flex", flexDirection: "column", gap: "16px" }}
             >
               <Input
-                id="vraksh"
+                id="claim"
                 label="vraksh.bio/"
                 onChange={(e) => setUsername(e.target.value)}
                 hasSuffix={
-                  <Button
-                    id="get-link"
-                    target="_blank"
-                    label="get your link"
-                    href={`https://vraksh.bio/` + username}
-                    variant="secondary"
-                    arrowIcon
-                  />
+                  <>
+                    <Button
+                      variant="secondary"
+                      style={{
+                        width: "fit-content",
+                        textWrap: "nowrap",
+                      }}
+                      disabled={loading|| username == ""}
+                      onClick={async () => {
+                        await claimUsername(username);
+                      }}
+                    >
+                      {loading ? (
+                        <Spinner size="s" />
+                      ) : status === "success" ? (
+                        <Flex vertical="center" horizontal="center" gap="4">
+                          <span>claim</span>
+                          <BiCheckCircle fill="#84fc03" size={12} />
+                        </Flex>
+                      ) : status === "error" ? (
+                        <Flex vertical="center" horizontal="center" gap="4">
+                          <span>claim</span>
+                          <BiXCircle fill="red" size={20} />
+                        </Flex>
+                      ) : (
+                        "claim"
+                      )}
+                    </Button>{" "}
+                  </>
                 }
                 value={username}
               />
             </div>
             <Link href="/auth/login">
-              <span style={{ cursor: "pointer", fontSize:"14px" }}>Login</span>
+              <span style={{ cursor: "pointer", fontSize: "14px" }}>Login</span>
             </Link>
 
             <Column horizontal="center" paddingTop="64" fillWidth gap="24">
@@ -342,27 +409,33 @@ export default function Home() {
                 logos={[
                   {
                     icon: false,
-                    wordmarkSrc: "/trademark/dopler-wordmark.svg",
+                    wordmarkSrc: "/trademark/snapchat.svg",
                     href: "https://dropler.app",
-                    size: "m",
+                    size: "xl",
                   },
                   {
                     icon: false,
-                    wordmarkSrc: "/trademark/design-engineers-wordmark.svg",
+                    wordmarkSrc: "/trademark/twitter.svg",
                     href: "https://club.dropler.io",
-                    size: "m",
+                    size: "xl",
                   },
                   {
                     icon: false,
-                    wordmarkSrc: "/trademark/enroll-wordmark.svg",
+                    wordmarkSrc: "/trademark/discord.svg",
                     href: "https://enroll.dopler.app",
-                    size: "m",
+                    size: "xl",
                   },
                   {
                     icon: false,
-                    wordmarkSrc: "/trademark/magic-portfolio-wordmark.svg",
+                    wordmarkSrc: "/trademark/type-dark.svg",
                     href: "https://magic-portfolio.com",
-                    size: "m",
+                    size: "xl",
+                  },
+                  {
+                    icon: false,
+                    wordmarkSrc: "/trademark/instagram.svg",
+                    href: "https://magic-portfolio.com",
+                    size: "xl",
                   },
                 ]}
               />

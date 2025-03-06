@@ -15,16 +15,19 @@ import {
   Line,
   Background,
   useToast,
+  Fade,
+  IconButton,
   Column,
   Row,
+  StyleOverlay,
+  GlitchFx,
   RevealFx,
 } from "@/once-ui/components";
-import { sendMagicLink } from "@/utlis/api";
-
 export default function Login() {
   const { addToast } = useToast();
   const [email, setEmail] = useState("");
-  
+  const [password, setPassword] = useState("");
+
   const validateLogin = () => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!regex.test(email)) {
@@ -32,18 +35,6 @@ export default function Login() {
     }
     return null;
   };
-
-  async function sendMagicLinkApi(email: string) {
-    try {
-      const data = await sendMagicLink(email);
-      console.log("API Response:", data);
-      addToast({ message: "Email sent successfully", variant: "success" });
-    } catch (error) {
-      addToast({ message: "Error sending email", variant: "danger" });
-    } finally {
-      console.log("Finally block");
-    }
-  }
 
   return (
     <Row
@@ -98,10 +89,9 @@ export default function Login() {
           style={{
             zIndex: 1,
           }}
-          onBackground="neutral-medium"
         >
-          Log in or
-          <SmartLink href="/auth/signup">&thinsp;sign up</SmartLink>
+          Sign up or
+          <SmartLink href="/auth/login">&thinsp;log in</SmartLink>
         </Text>
         <Column fillWidth gap="8">
           <Button
@@ -135,8 +125,9 @@ export default function Login() {
             value={email}
             validate={validateLogin}
             errorMessage={false}
+            radius="top"
           />
-          {/* <PasswordInput
+          <PasswordInput
             autoComplete="new-password"
             id="password"
             label="Password"
@@ -145,15 +136,18 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
             value={password}
             validate={validateLogin}
-          /> */}
+          />
         </Column>
         <Button
-          id="login"
-          label="Log in"
+          id="signup"
+          label="Sign Up"
           arrowIcon
           fillWidth
           onClick={() => {
-            sendMagicLinkApi(email);
+            addToast({
+              variant: "success",
+              message: "Wohoo! It's a toast!",
+            });
           }}
         />
       </Column>
