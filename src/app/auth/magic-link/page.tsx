@@ -12,8 +12,10 @@ import {
 } from "@/once-ui/components";
 import { verifyEmailApi } from "@/utlis/api";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function MagicLink() {
+  const router = useRouter();
   const { addToast } = useToast();
   const [code, setCode] = useState<string>("");
 
@@ -23,6 +25,8 @@ export default function MagicLink() {
       const data = await verifyEmailApi(code);
       console.log("API Response:", data);
       addToast({ message: "Email verified successfully", variant: "success" });
+      localStorage.setItem("token", data.token);
+      router.push("/dashboard");
       
     } catch (error) {
       addToast({ message: "Error checking username", variant: "danger" });

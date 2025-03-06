@@ -1,15 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-
 import {
   Heading,
   Text,
   Button,
-  Icon,
   Logo,
   Input,
-  PasswordInput,
   SmartLink,
   SmartImage,
   Line,
@@ -20,28 +17,38 @@ import {
   RevealFx,
 } from "@/once-ui/components";
 import { sendMagicLink } from "@/utlis/api";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const { addToast } = useToast();
+  const router = useRouter();
   const [email, setEmail] = useState("");
-  
+  const [error, setError] = useState("");
+
   const validateLogin = () => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!regex.test(email)) {
-      return "Email and / or password is invalid.";
+      setError("Email is invalid.");
+      return false;
     }
-    return null;
+    setError("");
+    return true;
   };
 
-  async function sendMagicLinkApi(email: string) {
+  async function sendMagicLinkApi() {
+    if (!validateLogin()) return;
+
     try {
       const data = await sendMagicLink(email);
-      console.log("API Response:", data);
-      addToast({ message: "Email sent successfully", variant: "success" });
+      console.log(data);
+      if (data.success) {
+        router.push("/auth/magic-link");
+        addToast({ message: "Email sent successfully", variant: "success" });
+      } else {
+        addToast({ message: "Failed to send email", variant: "danger" });
+      }
     } catch (error) {
       addToast({ message: "Error sending email", variant: "danger" });
-    } finally {
-      console.log("Finally block");
     }
   }
 
@@ -133,28 +140,15 @@ export default function Login() {
             labelAsPlaceholder
             onChange={(e) => setEmail(e.target.value)}
             value={email}
-            validate={validateLogin}
-            errorMessage={false}
+            errorMessage={error}
           />
-          {/* <PasswordInput
-            autoComplete="new-password"
-            id="password"
-            label="Password"
-            labelAsPlaceholder
-            radius="bottom"
-            onChange={(e) => setPassword(e.target.value)}
-            value={password}
-            validate={validateLogin}
-          /> */}
         </Column>
         <Button
           id="login"
           label="Log in"
           arrowIcon
           fillWidth
-          onClick={() => {
-            sendMagicLinkApi(email);
-          }}
+          onClick={sendMagicLinkApi}
         />
       </Column>
     </Row>

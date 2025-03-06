@@ -14,10 +14,16 @@ export const checkUsername = async (username: string) => {
     }
   };
 
+  type VerifyMagicLinkResponse = {
+    success: boolean;
+    message: string;
+    token: string;
+  }
+
   export const verifyEmailApi = async (code: string) => {
 
     try {
-      const response = await axios.get(
+      const response = await axios.get<Promise<VerifyMagicLinkResponse>>(
         `http://localhost:8080/api/verify-magic-link?code=${code}`
       );
       console.log(response.data);
@@ -27,10 +33,14 @@ export const checkUsername = async (username: string) => {
       throw error; // Throw the error so it can be caught by claimUsername
     }
   }
+    type SendMagicLinkResponse = {
+      success: boolean;
+      message: string;
+    }
 
   export const sendMagicLink = async (email: string) => {
     try {
-      const response = await axios.post(
+      const response = await axios.post<Promise<SendMagicLinkResponse>>(
         `http://localhost:8080/api/send-magic-link`,
         { email }
       );
